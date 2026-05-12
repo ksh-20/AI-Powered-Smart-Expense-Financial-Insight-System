@@ -36,6 +36,117 @@
 
 ---
 
+# Folder Structure
+```bash
+ai-finance-system/
+│
+├── backend/
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── config.py
+│   │   ├── database.py
+│   │   ├── dependencies.py
+│   │   ├── middleware.py
+│   │   ├── security.py
+│   │   ├── models/
+│   │   │   ├── __init__.py
+│   │   │   ├── user.py
+│   │   │   ├── expense.py
+│   │   │   ├── forecast.py
+│   │   │   ├── anomaly.py
+│   │   │   ├── statement.py
+│   │   │   ├── recommendation.py
+│   │   │   └── chatbot.py
+│   │   ├── schemas/
+│   │   │   ├── auth.py
+│   │   │   ├── expense.py
+│   │   │   ├── analytics.py
+│   │   │   └── chatbot.py
+│   │   ├── routers/
+│   │   │   ├── auth.py
+│   │   │   ├── expenses.py
+│   │   │   ├── analytics.py
+│   │   │   ├── forecast.py
+│   │   │   ├── anomaly.py
+│   │   │   ├── upload.py
+│   │   │   ├── insights.py
+│   │   │   ├── chatbot.py
+│   │   │   └── profile.py
+│   │   ├── services/
+│   │   │   ├── expense_service.py
+│   │   │  ├── analytics_service.py
+│   │   │  ├── forecast_service.py
+│   │   │  ├── anomaly_service.py
+│   │   │  ├── upload_service.py
+│   │   │  └── chatbot_service.py
+│   │   ├── ai/
+│   │   │   ├── categorizer.py
+│   │   │   ├── predictor.py
+│   │   │   ├── anomaly_detector.py
+│   │   │   ├── recommender.py
+│   │   │   └── chatbot_engine.py
+│   │   └── utils/
+│   │       ├── parser.py
+│   │       └── helpers.py
+│   │
+│   ├── requirements.txt
+│   ├── alembic.ini
+│   └── .env.example
+│
+├── frontend/
+│   ├── src/
+│   │   ├── main.jsx
+│   │   ├── App.jsx
+│   │   ├── api/axios.js
+│   │   ├── context/AuthContext.jsx
+│   │   ├── routes/ProtectedRoute.jsx
+│   │   ├── layouts/MainLayout.jsx
+│   │   ├── components/
+│   │   │   ├── Sidebar.jsx
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── Card.jsx
+│   │   │   ├── ExpenseTable.jsx
+│   │   │   ├── Loading.jsx
+│   │   │   └── Chatbot.jsx
+│   │   ├── pages/
+│   │   │   ├── Login.jsx
+│   │   │   ├── Signup.jsx
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── Expenses.jsx
+│   │   │   ├── Analytics.jsx
+│   │   │   ├── Forecast.jsx
+│   │   │   ├── Anomalies.jsx
+│   │   │   ├── Insights.jsx
+│   │   │   ├── Profile.jsx
+│   │   │   └── Assistant.jsx
+│   │   └── styles/index.css
+│   │
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── tailwind.config.js
+│   ├── postcss.config.js
+│   └── index.html
+│
+├── ml/
+│   ├── train_categorizer.py
+│   ├── train_forecast.py
+│   ├── train_anomaly.py
+│   ├── sample_data/
+│   │   └── expenses.csv
+│   └── saved_models/
+│
+├── docker/
+│   ├── backend.Dockerfile
+│   └── frontend.Dockerfile
+│
+├── docker-compose.yml
+├── .env.example
+└── README.md
+
+```
+
+---
+
 # Setup
 
 ## Clone
