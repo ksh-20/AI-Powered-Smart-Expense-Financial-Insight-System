@@ -226,6 +226,8 @@ psql (PostgreSQL) 18.x
 Windows Open Services.
 Find postgresql-x64-16 and Ensure status is Running.
 
+Go to C:/Program Files:/psql/18/bin and copy this path. Go to System environment variables and paste this path and save.
+
 4. Login to PostgreSQL
 Open PowerShell:
 ``` bash
