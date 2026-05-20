@@ -24,3 +24,4 @@ transformers
 torch
 accelerate
 sentencepiece
+google-genai

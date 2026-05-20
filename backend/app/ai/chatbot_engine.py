@@ -1,33 +1,36 @@
-from transformers import pipeline
+from google import genai
+from google.genai import types
+from app.config import settings
 
-generator=pipeline(
-    "text2text-generation",
-    model="google/flan-t5-base"
-)
+client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
-SYSTEM_PROMPT="""
-You are a financial AI assistant.
-Give concise financial advice.
-Help users save money.
-Explain overspending.
-Suggest budgeting strategies.
+SYSTEM_PROMPT = """
+You are an AI-powered financial assistant.
+
+Your responsibilities:
+- Help users reduce expenses
+- Suggest budgeting strategies
+- Explain spending behavior
+- Give investment and saving tips
+- Provide concise and practical financial advice
+
+Rules:
+- Keep answers concise but detailed
+- Be practical
+- Avoid generic responses
+- Use bullet points when helpful
 """
 
-def financial_chat(message:str):
-
-    prompt=f"""
-    {SYSTEM_PROMPT}
-
-    User: {message}
-
-    Assistant:
-    """
-
-    result=generator(
-        prompt,
-        max_length=128,
-        do_sample=True,
-        temperature=0.7
-    )
-
-    return result[0]["generated_text"]
+def financial_chat(message: str):
+    try:
+        response = client.models.generate_content(
+            model="gemini-3.5-flash",
+            contents=message,
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT
+            )
+        )
+        return response.text
+        
+    except Exception as e:
+        return f"An error occurred: {str(e)}"

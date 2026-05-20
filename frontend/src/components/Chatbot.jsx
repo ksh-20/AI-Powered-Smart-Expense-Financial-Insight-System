@@ -61,7 +61,9 @@ export default function Chatbot(){
                             : "bg-white/10"
                         }`}
                     >
-                        {c.text}
+                        <div className="whitespace-pre-wrap leading-7">
+                            {c.text}
+                        </div>
                     </div>
                 ))}
 
