@@ -50,6 +50,7 @@ ml/sample_data/generated/
 # Node / React / Vite
 node_modules/
 frontend/node_modules/
+frontend/package-lock.json
 
 
 # Build folders

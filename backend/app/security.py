@@ -3,15 +3,25 @@ from jose import jwt
 from passlib.context import CryptContext
 from app.config import settings
 
-pwd=CryptContext(schemes=["bcrypt"])
+pwd_context=CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto"
+)
 
 def hash_password(password:str):
-    return pwd.hash(password)
+    password=password[:72]
+    return pwd_context.hash(password)
 
-def verify_password(password,hashed):
-    return pwd.verify(password,hashed)
+def verify_password(plain_password:str, hashed_password:str):
+    plain_password=plain_password[:72]
+
+    return pwd_context.verify(plain_password, hashed_password)
 
 def create_token(data:dict):
-    payload=data.copy()
-    payload["exp"]=datetime.utcnow()+timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    return jwt.encode(payload,settings.SECRET_KEY,algorithm=settings.ALGORITHM)
+    to_encode=data.copy()
+
+    expire=datetime.utcnow()+timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+
+    to_encode.update({"exp":expire})
+
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
