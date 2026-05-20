@@ -154,8 +154,8 @@ ai-finance-system/
 ## Clone
 
 ```bash
-git clone <repo>
-cd ai-finance-system
+git clone <https://github.com/ksh-20/AI-Powered-Smart-Expense-Financial-Insight-System>
+cd AI-Powered-Smart-Expense-Financial-Insight-System
 ```
 
 ---
