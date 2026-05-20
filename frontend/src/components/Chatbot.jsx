@@ -2,62 +2,96 @@ import {useState} from "react";
 import api from "../api/axios";
 
 export default function Chatbot(){
-
     const [message,setMessage]=useState("");
     const [chat,setChat]=useState([]);
+    const [loading,setLoading]=useState(false);
 
     const send=async()=>{
+        if(!message.trim()) return;
 
-        if(!message) return;
+        const userMessage=message;
 
-        const res=await api.post("/api/chatbot",{
-            message
-        });
-
-        setChat([
-            ...chat,
+        setChat(prev=>[
+            ...prev,
             {
-                q:message,
-                a:res.data.response
+                type:"user",
+                text:userMessage
             }
         ]);
 
         setMessage("");
+        setLoading(true);
+
+        try{
+            const res=await api.post(
+                "/api/chatbot",
+                {
+                    message:userMessage
+                }
+            );
+
+            setChat(prev=>[
+                ...prev,
+                {
+                    type:"bot",
+                    text:res.data.response
+                }
+            ]);
+        }catch(err){
+            setChat(prev=>[
+                ...prev,
+                {
+                    type:"bot",
+                    text:"Error generating response"
+                }
+            ]);
+        }
+        setLoading(false);
     };
 
     return(
-        <div className="bg-white/10 p-5 rounded-2xl">
-
-            <div className="h-96 overflow-auto mb-5">
-
+        <div className="bg-white/10 rounded-3xl p-6">
+            <div className="h-[500px] overflow-auto mb-5 space-y-4">
                 {chat.map((c,i)=>(
-                    <div key={i} className="mb-4">
-                        <p className="font-bold">You:</p>
-                        <p>{c.q}</p>
-
-                        <p className="font-bold mt-2">AI:</p>
-                        <p>{c.a}</p>
+                    <div
+                        key={i}
+                        className={`p-4 rounded-2xl max-w-[80%]
+                        ${c.type==="user"
+                            ? "bg-indigo-600 ml-auto"
+                            : "bg-white/10"
+                        }`}
+                    >
+                        {c.text}
                     </div>
                 ))}
 
+                {loading && (
+                    <div className="bg-white/10 p-4 rounded-2xl w-fit">
+                        Thinking...
+                    </div>
+                )}
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-3">
                 <input
                     value={message}
                     onChange={e=>setMessage(e.target.value)}
-                    className="flex-1 p-3 rounded-lg bg-black/20"
+                    onKeyDown={e=>{
+                        if(e.key==="Enter"){
+                            send();
+                        }
+                    }}
                     placeholder="Ask financial questions..."
+                    className="flex-1 p-4 rounded-2xl bg-black/20 outline-none"
                 />
 
                 <button
                     onClick={send}
-                    className="bg-indigo-600 px-5 rounded-lg"
+                    className="bg-indigo-600 px-6 rounded-2xl"
                 >
                     Send
                 </button>
             </div>
-
         </div>
     )
 }

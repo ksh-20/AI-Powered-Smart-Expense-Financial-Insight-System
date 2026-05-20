@@ -19,3 +19,8 @@ sentence-transformers
 numpy
 alembic
 PyPDF2
+
+transformers
+torch
+accelerate
+sentencepiece
