@@ -254,17 +254,23 @@ Exit:
 
 6. Create Root .env
 // FILE: .env
+``` bash
 DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/finance_ai
 SECRET_KEY=super_secret_key
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=1440
+GEMINI_API_KEY=<YOUR_API_KEY>
+```
 
 7. Create Backend .env
 // FILE: backend/.env
+``` bash
 DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/finance_ai
 SECRET_KEY=super_secret_key
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=1440
+GEMINI_API_KEY=<YOUR_API_KEY>
+```
 
 8. Create Python Virtual Environment
 From project root:
