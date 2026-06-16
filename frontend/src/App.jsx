@@ -1,7 +1,7 @@
 import {
-BrowserRouter,
-Routes,
-Route
+  BrowserRouter,
+  Routes,
+  Route
 } from "react-router-dom";
 
 import Login from "./pages/Login";
@@ -14,39 +14,37 @@ import Anomalies from "./pages/Anomalies";
 import Insights from "./pages/Insights";
 import Profile from "./pages/Profile";
 import Assistant from "./pages/Assistant";
+import Settings from "./pages/Settings";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import MainLayout from "./layouts/MainLayout";
 
-export default function App(){
+export default function App() {
 
-    const Page=(Component)=>(
-        <ProtectedRoute>
-            <MainLayout>
-                <Component/>
-            </MainLayout>
-        </ProtectedRoute>
-    );
+  const Page = (Component) => (
+    <ProtectedRoute>
+      <MainLayout>
+        <Component />
+      </MainLayout>
+    </ProtectedRoute>
+  );
 
-    return(
-        <BrowserRouter>
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login"     element={<Login />} />
+        <Route path="/signup"    element={<Signup />} />
 
-            <Routes>
-
-                <Route path="/login" element={<Login/>}/>
-                <Route path="/signup" element={<Signup/>}/>
-
-                <Route path="/" element={Page(Dashboard)}/>
-                <Route path="/expenses" element={Page(Expenses)}/>
-                <Route path="/analytics" element={Page(Analytics)}/>
-                <Route path="/forecast" element={Page(Forecast)}/>
-                <Route path="/anomalies" element={Page(Anomalies)}/>
-                <Route path="/insights" element={Page(Insights)}/>
-                <Route path="/profile" element={Page(Profile)}/>
-                <Route path="/assistant" element={Page(Assistant)}/>
-
-            </Routes>
-
-        </BrowserRouter>
-    )
+        <Route path="/"          element={Page(Dashboard)} />
+        <Route path="/expenses"  element={Page(Expenses)} />
+        <Route path="/analytics" element={Page(Analytics)} />
+        <Route path="/forecast"  element={Page(Forecast)} />
+        <Route path="/anomalies" element={Page(Anomalies)} />
+        <Route path="/insights"  element={Page(Insights)} />
+        <Route path="/profile"   element={Page(Profile)} />
+        <Route path="/assistant" element={Page(Assistant)} />
+        <Route path="/settings"  element={Page(Settings)} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
