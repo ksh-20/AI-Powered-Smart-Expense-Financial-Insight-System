@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../api/axios";
 import Card from "../components/Card";
 import { useSettings } from "../context/SettingsContext";
@@ -20,11 +21,15 @@ const COLORS = [
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
+  const [budgetData, setBudgetData] = useState([]);
   const { formatAmount, settings } = useSettings();
 
   useEffect(() => {
     api.get("/api/analytics")
       .then((res) => setData(res.data))
+      .catch(console.error);
+    api.get("/api/budget/progress")
+      .then((res) => setBudgetData(res.data))
       .catch(console.error);
   }, []);
 
@@ -122,6 +127,56 @@ export default function Dashboard() {
           </ResponsiveContainer>
         )}
       </div>
+      {/* Budget Health section */}
+      {budgetData.length > 0 && (() => {
+        const atRisk = budgetData.filter((b) => b.status !== "safe");
+        const displayed = atRisk.length > 0 ? atRisk.slice(0, 3) : budgetData.slice(0, 3);
+        return (
+          <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-6 mt-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                🎯 Budget Health
+              </h2>
+              <Link
+                to="/budget"
+                className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+              >
+                View all goals →
+              </Link>
+            </div>
+            <div className="space-y-3">
+              {displayed.map((b) => (
+                <div key={b.id}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm text-white">{b.category}</span>
+                    <span className={`text-xs font-semibold ${
+                      b.status === "exceeded" ? "text-red-400" :
+                      b.status === "warning"  ? "text-yellow-400" : "text-emerald-400"
+                    }`}>
+                      {b.percent_used}%
+                    </span>
+                  </div>
+                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-700 ${
+                        b.status === "exceeded" ? "bg-red-500" :
+                        b.status === "warning"  ? "bg-yellow-500" : "bg-emerald-500"
+                      }`}
+                      style={{ width: `${Math.min(b.percent_used, 100)}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-600 mt-0.5">
+                    {formatAmount(b.spent)} / {formatAmount(b.monthly_limit)}
+                  </p>
+                </div>
+              ))}
+            </div>
+            {atRisk.length === 0 && (
+              <p className="text-xs text-emerald-400 mt-3">✓ All categories are within budget this month</p>
+            )}
+          </div>
+        );
+      })()}
     </div>
   );
 }

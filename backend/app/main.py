@@ -15,9 +15,22 @@ from app.routers import (
     insights,
     profile,
     settings,
+    budget,
+    categorize,
 )
 
 Base.metadata.create_all(bind=engine)
+
+from sqlalchemy import text
+try:
+    with engine.connect() as conn:
+        conn.execute(text("ALTER TABLE uploaded_statements ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'pending';"))
+        conn.execute(text("ALTER TABLE uploaded_statements ADD COLUMN IF NOT EXISTS transactions_imported INTEGER DEFAULT 0;"))
+        conn.execute(text("ALTER TABLE uploaded_statements ADD COLUMN IF NOT EXISTS error_message TEXT;"))
+        conn.execute(text("ALTER TABLE uploaded_statements ADD COLUMN IF NOT EXISTS uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;"))
+        conn.commit()
+except Exception as e:
+    print(f"Auto-migration database check warning: {e}")
 
 app = FastAPI(title="AI Finance System")
 
@@ -39,6 +52,8 @@ app.include_router(upload.router)
 app.include_router(insights.router)
 app.include_router(profile.router)
 app.include_router(settings.router)
+app.include_router(budget.router)
+app.include_router(categorize.router)
 
 @app.get("/")
 def root():

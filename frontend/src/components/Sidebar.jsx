@@ -10,6 +10,7 @@ const NAV = [
   { to: "/forecast",   label: "Forecast",   icon: "▲" },
   { to: "/anomalies",  label: "Anomalies",  icon: "⚠" },
   { to: "/insights",   label: "Insights",   icon: "✦" },
+  { to: "/budget",     label: "Budget Goals", icon: "🎯" },
   { to: "/assistant",  label: "Assistant",  icon: "✧" },
 ];
 

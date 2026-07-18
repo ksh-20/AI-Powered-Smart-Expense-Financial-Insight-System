@@ -6,3 +6,5 @@ from .statement import *
 from .recommendation import *
 from .chatbot import *
 from .user_settings import *
+from .budget_goal import *
+from .category_rule import *

@@ -15,6 +15,7 @@ import Insights from "./pages/Insights";
 import Profile from "./pages/Profile";
 import Assistant from "./pages/Assistant";
 import Settings from "./pages/Settings";
+import Budget from "./pages/Budget";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import MainLayout from "./layouts/MainLayout";
@@ -44,6 +45,7 @@ export default function App() {
         <Route path="/profile"   element={Page(Profile)} />
         <Route path="/assistant" element={Page(Assistant)} />
         <Route path="/settings"  element={Page(Settings)} />
+        <Route path="/budget"    element={Page(Budget)} />
       </Routes>
     </BrowserRouter>
   );

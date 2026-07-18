@@ -25,3 +25,5 @@ torch
 accelerate
 sentencepiece
 google-genai
+celery
+redis[hiredis]

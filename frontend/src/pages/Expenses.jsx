@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import api from "../api/axios";
 import ExpenseTable, { CATEGORIES } from "../components/ExpenseTable";
 import Loading from "../components/Loading";
@@ -43,6 +43,41 @@ function ExpenseModal({ mode, initial, onClose, onSaved }) {
   const [form, setForm] = useState(initial || emptyForm);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [suggestion, setSuggestion] = useState(null);   // { category, source, confidence }
+  const [suggesting, setSuggesting] = useState(false);
+  const debounceRef = useRef(null);
+
+  // Debounced live category suggestion
+  useEffect(() => {
+    const desc = form.description.trim();
+    if (!desc || desc.length < 3) {
+      setSuggestion(null);
+      return;
+    }
+    clearTimeout(debounceRef.current);
+    setSuggesting(true);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await api.get(`/api/categorize/?description=${encodeURIComponent(desc)}`);
+        setSuggestion(res.data);
+      } catch {
+        setSuggestion(null);
+      } finally {
+        setSuggesting(false);
+      }
+    }, 500);
+    return () => clearTimeout(debounceRef.current);
+  }, [form.description]);
+
+  const applySuggestion = () => {
+    if (suggestion) setForm((f) => ({ ...f, category: suggestion.category }));
+  };
+
+  const sourceLabel = suggestion?.source === "learned"
+    ? { icon: "🧠", text: "Learned",  color: "text-purple-400 border-purple-500/30 bg-purple-500/10" }
+    : suggestion?.source === "keyword"
+    ? { icon: "🔍", text: "Keyword",  color: "text-indigo-400 border-indigo-500/30 bg-indigo-500/10" }
+    : { icon: "❓", text: "Fallback", color: "text-gray-400 border-white/10 bg-white/5" };
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -146,7 +181,35 @@ function ExpenseModal({ mode, initial, onClose, onSaved }) {
             <label className="block text-xs text-gray-400 mb-1.5 uppercase tracking-wide">
               Category
             </label>
+            {/* Suggestion badge */}
+            {(suggesting || suggestion) && (
+              <div className="flex items-center gap-2 mb-2">
+                {suggesting ? (
+                  <span className="text-xs text-gray-500 animate-pulse">Analysing…</span>
+                ) : suggestion && (
+                  <>
+                    <span className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border ${sourceLabel.color}`}>
+                      {sourceLabel.icon} {sourceLabel.text}: <strong>{suggestion.category}</strong>
+                    </span>
+                    {form.category !== suggestion.category && (
+                      <button
+                        type="button"
+                        id="apply-category-suggestion"
+                        onClick={applySuggestion}
+                        className="text-xs text-indigo-400 hover:text-indigo-300 underline transition-colors"
+                      >
+                        Apply
+                      </button>
+                    )}
+                    {form.category === suggestion.category && (
+                      <span className="text-xs text-emerald-400">✓ Applied</span>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
             <select
+              id="expense-category-select"
               value={form.category}
               onChange={set("category")}
               className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors"
@@ -185,32 +248,75 @@ function ExpenseModal({ mode, initial, onClose, onSaved }) {
 function UploadZone({ onUploaded }) {
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const inputRef = useRef();
+  const pollIntervalRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    };
+  }, []);
 
   const handleFile = async (file) => {
     if (!file) return;
     const ext = file.name.split(".").pop().toLowerCase();
-    if (!["pdf", "csv"].includes(ext)) {
-      setError("Only PDF or CSV files are supported.");
+    if (!["pdf", "csv", "png", "jpg", "jpeg"].includes(ext)) {
+      setError("Only PDF, CSV, PNG, JPG, or JPEG files are supported.");
       return;
     }
     setError("");
     setResult(null);
     setUploading(true);
+    setStatusMessage("Uploading statement...");
+
     try {
       const form = new FormData();
       form.append("file", file);
       const res = await api.post("/api/upload/", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      setResult(res.data);
-      onUploaded();
+
+      const statementId = res.data.id;
+      setStatusMessage("Processing statement in background...");
+
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+      pollIntervalRef.current = setInterval(async () => {
+        try {
+          const statusRes = await api.get(`/api/upload/status/${statementId}`);
+          const { status, transactions_imported, error_message } = statusRes.data;
+
+          if (status === "completed") {
+            clearInterval(pollIntervalRef.current);
+            setResult({
+              file: file.name,
+              transactions_imported
+            });
+            setUploading(false);
+            setStatusMessage("");
+            onUploaded();
+          } else if (status === "failed") {
+            clearInterval(pollIntervalRef.current);
+            setError(error_message || "Extraction or OCR scanning failed.");
+            setUploading(false);
+            setStatusMessage("");
+          } else if (status === "processing") {
+            setStatusMessage("Extracting and categorizing transactions (background)...");
+          }
+        } catch (pollErr) {
+          clearInterval(pollIntervalRef.current);
+          setError("Failed to check processing status.");
+          setUploading(false);
+          setStatusMessage("");
+        }
+      }, 2000);
+
     } catch (err) {
       setError(err?.response?.data?.detail || "Upload failed.");
-    } finally {
       setUploading(false);
+      setStatusMessage("");
     }
   };
 
@@ -232,7 +338,7 @@ function UploadZone({ onUploaded }) {
       <input
         ref={inputRef}
         type="file"
-        accept=".pdf,.csv"
+        accept=".pdf,.csv,.png,.jpg,.jpeg"
         className="hidden"
         onChange={(e) => handleFile(e.target.files[0])}
       />
@@ -240,7 +346,7 @@ function UploadZone({ onUploaded }) {
       {uploading ? (
         <>
           <div className="w-10 h-10 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin" />
-          <p className="text-sm text-gray-400">Uploading &amp; extracting transactions…</p>
+          <p className="text-sm text-gray-400 font-medium">{statusMessage}</p>
         </>
       ) : result ? (
         <>
@@ -265,9 +371,9 @@ function UploadZone({ onUploaded }) {
           </div>
           <div className="text-center">
             <p className="text-sm text-gray-300 font-medium">
-              Drop your bank statement here
+              Drop your bank statement or receipt here
             </p>
-            <p className="text-xs text-gray-500 mt-0.5">PDF or CSV · click to browse</p>
+            <p className="text-xs text-gray-500 mt-0.5">PDF, CSV, PNG, or JPG · click to browse</p>
           </div>
           {error && (
             <p className="text-xs text-red-400 mt-1">{error}</p>

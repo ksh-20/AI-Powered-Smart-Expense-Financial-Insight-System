@@ -1,12 +1,19 @@
 from fastapi import HTTPException
 from app.models.expense import Expense
+from app.ai.categorizer import learn_from_expense
+
 
 def create_expense(db, data, user_id):
     expense = Expense(**data.dict(), user_id=user_id)
     db.add(expense)
     db.commit()
     db.refresh(expense)
+
+    # Auto-learn: store this description → category mapping for the user
+    learn_from_expense(expense.description, expense.category, db, user_id)
+
     return expense
+
 
 def update_expense(db, expense_id, data, user_id):
     expense = db.query(Expense).filter(
@@ -20,7 +27,12 @@ def update_expense(db, expense_id, data, user_id):
         setattr(expense, field, value)
     db.commit()
     db.refresh(expense)
+
+    # Auto-learn: reinforce updated description → category mapping
+    learn_from_expense(expense.description, expense.category, db, user_id)
+
     return expense
+
 
 def delete_expense(db, expense_id, user_id):
     expense = db.query(Expense).filter(
