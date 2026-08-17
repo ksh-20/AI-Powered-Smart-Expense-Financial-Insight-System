@@ -344,6 +344,6 @@ python train_categorizer.py
 
 # Contributors
 
-Thanks to @arzzun05 and @anshdhoka-cmyk for their valueble contributions.
+Thanks to [Arjun](https://github.com/arzzun05) and [Ansh](https://github.com/anshdhoka-cmyk) for their valuable contributions.
 
 ---
