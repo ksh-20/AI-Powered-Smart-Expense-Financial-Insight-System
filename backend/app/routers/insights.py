@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.expense import Expense
+from app.models.user_settings import UserSettings
+from app.services.budget_service import get_progress
 from app.ai.recommender import generate_detailed_insights
 
 router = APIRouter(prefix="/api/insights", tags=["Insights"])
@@ -29,15 +31,38 @@ def insights(
         categories[cat] = round(categories.get(cat, 0.0) + e.amount, 2)
         expense_dicts.append({
             "id": e.id,
-            "amount": e.amount,
+            "amount": float(e.amount),
             "category": cat,
             "description": e.description or "Expense",
             "date": str(e.date) if e.date else "",
         })
 
-    result = generate_detailed_insights(total, categories, expense_dicts)
+    # Retrieve real-time budget goals and progress for this user
+    budget_progress_data = get_progress(db, user.id)
+
+    # Retrieve portfolio monthly budget from user settings
+    settings = (
+        db.query(UserSettings)
+        .filter(UserSettings.user_id == user.id)
+        .first()
+    )
+    monthly_budget = (
+        float(settings.monthly_budget)
+        if settings and settings.monthly_budget
+        else 0.0
+    )
+
+    result = generate_detailed_insights(
+        total=total,
+        categories=categories,
+        expenses=expense_dicts,
+        budget_goals=budget_progress_data,
+        monthly_budget=monthly_budget,
+    )
     result["total"] = total
     result["count"] = len(expenses)
     result["categories"] = categories
+    result["budget_goals"] = budget_progress_data
+    result["monthly_budget"] = monthly_budget
 
     return result
