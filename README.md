@@ -1,42 +1,64 @@
-# FinAI - An AI Powered Smart Expense & Financial Insight System
+# FinAI — AI-Powered Smart Expense & Financial Insight System
 
-## Features
-
-- AI Expense Categorization
-- Financial Forecasting
-- Spending Anomaly Detection
-- AI Financial Assistant
-- JWT Authentication
-- CSV/PDF Statement Upload
-- Analytics Dashboard
-- Recharts Visualization
-- PostgreSQL Integration
-- Dockerized Deployment
+<p align="center">
+  <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI" />
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+  <img src="https://img.shields.io/badge/Celery-37814A?style=for-the-badge&logo=celery&logoColor=white" alt="Celery" />
+  <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis" />
+</p>
 
 ---
 
-# Tech Stack
+## Overview
 
-## Frontend
+**FinAI** is an intelligent, full-stack personal finance and expense intelligence platform. It combines machine learning algorithms, time-series forecasting, multi-factor anomaly detection, automated receipt & statement OCR parsing, and conversational AI advisory to help users understand, optimize, and master their personal finances.
 
-- React + Vite
-- TailwindCSS
-- Axios
-- Recharts
+---
 
-## Backend
+## Key Highlights & Features
 
-- FastAPI
-- SQLAlchemy
-- PostgreSQL
-- JWT Auth
+### 🧠 AI & Intelligent Insights
 
-## AI/ML
+- **Intelligent Expense Categorization**: Automated machine learning classifier assigns transactions into standardized financial buckets.
+- **Dynamic Spending Forecast**: Predicts upcoming 90-day expenditures considering linear regression trend slopes, calendar month day variances (31 vs 30 vs 28 days), weekend velocity weighting, and seasonal shifts with confidence intervals.
+- **Multi-Factor Anomaly Detection & XAI**: Flags suspicious and abnormal expenditures using IsolationForest & category baseline deviations, with on-demand NLP natural language diagnostic summaries.
+- **Budget-Linked Financial Insights**: In-depth multi-paragraph advisory providing 50/30/20 allocation diagnostics, category overage freeze plans, daily spending allowance ceilings, and annual compounding projections.
+- **AI Financial Assistant**: Real-time context-aware chat assistant that analyzes your live financial telemetry to answer budgeting, saving, and optimization questions.
 
-- Scikit-learn
-- Statsmodels
-- IsolationForest
-- Gemini API
+### 📊 Deep Analytics & Visualization
+
+- **Live Expenditure Telemetry**: Interactive donut share-of-wallet distribution, category benchmark comparisons, monthly trajectory area charts, day-of-week radar/bar rhythms, and cumulative S-curves.
+- **Dynamic Timeframe Filtering**: Filter instantly by _All Time_, _This Month_, _Last 30 Days_, _Last 90 Days_, or _This Year_ with live recalculation and CSV export.
+
+### 🎯 Budget Goals & Monitoring
+
+- **Category-Level Ceilings**: Define monthly spending targets per category with color-coded consumption meters (_Safe_, _Warning &ge;70%_, _Exceeded &ge;100%_).
+- **Synchronized Insights**: Budget overruns and near-limit thresholds directly inform the AI recommendation engine.
+
+### 📄 Automated Statement & Receipt Ingestion
+
+- **Multimodal OCR Extraction**: Upload bank statements or receipt images (PDF, PNG, JPG, CSV) for automated transaction ingestion and background processing via Celery and Redis.
+
+### 🔐 Security & User Preferences
+
+- **Enterprise-Grade Auth**: JWT-based authentication with bcrypt password hashing and protected routing.
+- **Multi-Currency & Customization**: Support for INR (₹), USD ($), EUR (€), GBP (£), JPY (¥), AUD (A$), and CAD (C$), with customizable date formats and budget limits.
+
+---
+
+## Tech Stack
+
+| Layer              | Technologies                                                                |
+| ------------------ | --------------------------------------------------------------------------- |
+| **Frontend**       | React 18, Vite, Tailwind CSS, Recharts, Axios, React Router v6              |
+| **Backend**        | FastAPI, SQLAlchemy ORM, Pydantic, Uvicorn, Celery, Redis                   |
+| **Database**       | PostgreSQL 16+                                                              |
+| **AI / ML**        | Scikit-learn, IsolationForest, Statsmodels, NLP Text Parsers, AI LLM Engine |
+| **DevOps & Tools** | Docker, Docker Compose, Git, Alembic                                        |
 
 ---
 
@@ -50,12 +72,18 @@ ai-finance-system/
 │   │   ├── main.py
 │   │   ├── config.py
 │   │   ├── database.py
+│   |   ├── cache.py
 │   │   ├── dependencies.py
+│   |   ├── celery_app.py
+│   |   ├── tasks.py
 │   │   ├── middleware.py
 │   │   ├── security.py
 │   │   ├── models/
 │   │   │   ├── __init__.py
 │   │   │   ├── user.py
+│   |   |   ├── budget_goal.py
+│   |   |   ├── category_rule.py
+│   |   |   ├── user_settings.py
 │   │   │   ├── expense.py
 │   │   │   ├── forecast.py
 │   │   │   ├── anomaly.py
@@ -64,11 +92,17 @@ ai-finance-system/
 │   │   │   └── chatbot.py
 │   │   ├── schemas/
 │   │   │   ├── auth.py
+│   |   |   ├── budget.py
+│   |   |   ├── category.py
+│   |   |   ├── settings.py
 │   │   │   ├── expense.py
 │   │   │   ├── analytics.py
 │   │   │   └── chatbot.py
 │   │   ├── routers/
 │   │   │   ├── auth.py
+│   |   |   ├── budget.py
+│   |   |   ├── categorize.py
+│   |   |   ├── settings.py
 │   │   │   ├── expenses.py
 │   │   │   ├── analytics.py
 │   │   │   ├── forecast.py
@@ -82,11 +116,14 @@ ai-finance-system/
 │   │   │   ├── analytics_service.py
 │   │   │   ├── forecast_service.py
 │   │   │   ├── anomaly_service.py
+│   |   |   ├── budget_service.py
+│   |   |   ├── settings_service.py
 │   │   │   ├── upload_service.py
 │   │   │   └── chatbot_service.py
 │   │   ├── ai/
 │   │   │   ├── categorizer.py
 │   │   │   ├── predictor.py
+│   |   |   ├── ocr_parser.py
 │   │   │   ├── anomaly_detector.py
 │   │   │   ├── recommender.py
 │   │   │   └── chatbot_engine.py
@@ -94,6 +131,7 @@ ai-finance-system/
 │   │       ├── parser.py
 │   │       └── helpers.py
 │   │
+│   ├── uploads/
 │   ├── requirements.txt
 │   ├── alembic.ini
 │   └── .env
@@ -103,13 +141,16 @@ ai-finance-system/
 │   │   ├── main.jsx
 │   │   ├── App.jsx
 │   │   ├── api/axios.js
-│   │   ├── context/AuthContext.jsx
+│   │   ├── context/
+│   │   │   ├── AuthContext.jsx
+│   │   │   ├── SettingsContext.jsx
 │   │   ├── routes/ProtectedRoute.jsx
 │   │   ├── layouts/MainLayout.jsx
 │   │   ├── components/
 │   │   │   ├── Sidebar.jsx
 │   │   │   ├── Navbar.jsx
 │   │   │   ├── Card.jsx
+│   |   |   ├── FormattedText.jsx
 │   │   │   ├── ExpenseTable.jsx
 │   │   │   ├── Loading.jsx
 │   │   │   └── Chatbot.jsx
@@ -117,6 +158,8 @@ ai-finance-system/
 │   │   │   ├── Login.jsx
 │   │   │   ├── Signup.jsx
 │   │   │   ├── Dashboard.jsx
+│   |   |   ├── Budget.jsx
+│   |   |   ├── Settings.jsx
 │   │   │   ├── Expenses.jsx
 │   │   │   ├── Analytics.jsx
 │   │   │   ├── Forecast.jsx
@@ -146,25 +189,129 @@ ai-finance-system/
 │   └── frontend.Dockerfile
 │
 ├── docker-compose.yml
-├── .env
+├── .gitignore
 └── README.md
 
 ```
 
 ---
 
-# Setup
+## Getting Started & Installation
 
-## Clone
+### 1. Clone the Repository
 
 ```bash
-git clone <https://github.com/ksh-20/AI-Powered-Smart-Expense-Financial-Insight-System>
+git clone https://github.com/ksh-20/AI-Powered-Smart-Expense-Financial-Insight-System.git
 cd AI-Powered-Smart-Expense-Financial-Insight-System
 ```
 
 ---
 
-# Models Training
+### 2. Database Setup (PostgreSQL)
+
+1. **Install PostgreSQL** and launch the service:
+   - Default Port: `5432`
+   - Default User: `postgres`
+
+2. **Create the Database**:
+   ```bash
+   psql -U postgres
+   ```
+   Inside PostgreSQL shell:
+   ```sql
+   CREATE DATABASE finance_ai;
+   \q
+   ```
+
+---
+
+### 3. Environment Configuration
+
+Create a `.env` file in the project root and in the `backend/` directory:
+
+```env
+DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/finance_ai
+SECRET_KEY=super_secret_jwt_key_change_me_in_production
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
+GEMINI_API_KEY=YOUR_AI_API_KEY
+```
+
+> **AI API Key**: Obtain a free API Key from Google AI Studio and place it in the `GEMINI_API_KEY` field.
+
+---
+
+### 4. Backend Setup
+
+```bash
+cd backend
+
+# Create & activate Python virtual environment
+python -m venv venv
+
+# Windows:
+venv\Scripts\activate
+# Linux/macOS:
+# source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run backend dev server
+uvicorn app.main:app --reload --port 8000
+```
+
+- **Interactive API Documentation**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+---
+
+### 5. Frontend Setup
+
+In a separate terminal:
+
+```bash
+cd frontend
+
+# Install node dependencies
+npm install
+
+# Run Vite dev server
+npm run dev
+```
+
+- **Application Web UI**: [http://localhost:5173](http://localhost:5173)
+
+---
+
+### 6. Background Workers & Redis (Optional / OCR Processing)
+
+1. **Start Redis**:
+
+   ```bash
+   docker run -d --name expense-redis -p 6379:6379 redis:alpine
+   ```
+
+2. **Start Celery Worker**:
+   ```bash
+   cd backend
+   celery -A app.celery_app:celery_app worker --loglevel=info --pool=solo
+   ```
+
+---
+
+### 7. Full Stack with Docker Compose
+
+To spin up the entire application stack (Backend, Frontend, PostgreSQL, Redis) with a single command:
+
+```bash
+docker-compose up --build
+```
+
+---
+
+## Machine Learning Models Training
+
+Train or re-train custom expense classifiers locally:
 
 ```bash
 cd ml
@@ -173,308 +320,30 @@ python train_categorizer.py
 
 ---
 
-# Backend Setup
+## API Summary Reference
 
-```bash
-cd backend
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
-
----
-
-# Frontend Setup
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
----
-
-# Docker Setup
-
-```bash
-docker-compose up --build
-```
+| Module             | Method   | Endpoint               | Description                                        |
+| ------------------ | -------- | ---------------------- | -------------------------------------------------- |
+| **Authentication** | `POST`   | `/api/auth/signup`     | Register a new user account                        |
+|                    | `POST`   | `/api/auth/login`      | Authenticate & receive JWT bearer token            |
+| **Expenses**       | `GET`    | `/api/expenses`        | Retrieve all user transactions                     |
+|                    | `POST`   | `/api/expenses`        | Record a new expense with auto-categorization      |
+|                    | `DELETE` | `/api/expenses/{id}`   | Delete an existing transaction                     |
+| **Analytics**      | `GET`    | `/api/analytics`       | Telemetry KPIs, distribution, trajectory & rhythms |
+| **Forecast**       | `GET`    | `/api/forecast`        | Dynamic 90-day time-series projections             |
+| **Anomalies**      | `GET`    | `/api/anomaly`         | Detect outliers & baseline breaches                |
+|                    | `POST`   | `/api/anomaly/explain` | NLP AI deep-dive explanation of flagged expense    |
+| **Insights**       | `GET`    | `/api/insights`        | Budget-linked multi-factor actionable diagnostics  |
+| **Budget Goals**   | `GET`    | `/api/budget/progress` | Real-time budget progress per category             |
+|                    | `POST`   | `/api/budget/`         | Create or update category spending limits          |
+| **AI Assistant**   | `POST`   | `/api/chatbot/`        | Conversational financial intelligence              |
+| **Settings**       | `GET`    | `/api/settings`        | Retrieve user preferences & monthly budget         |
+|                    | `PUT`    | `/api/settings`        | Update currency, theme, and budget thresholds      |
 
 ---
 
-# Database Setup
+# Contributors
 
-1. Install PostgreSQL
-
-Download and install.
-
-During installation:
-Username: postgres
-Password: <password of choice>
-Port: 5432
-
-Also install:
-pgAdmin
-Command Line Tools
-
-2. Verify PostgreSQL Installation
-   Open terminal / PowerShell:
-
-```bash
-psql --version
-```
-
-Expected:
-psql (PostgreSQL) 18.x
-
-3. Start PostgreSQL Service
-   Windows Open Services.
-   Find postgresql-x64-16 and Ensure status is Running.
-
-Go to C:/Program Files:/psql/18/bin and copy this path. Go to System environment variables and paste this path and save.
-
-4. Login to PostgreSQL
-   Open PowerShell:
-
-```bash
-psql -U postgres
-```
-
-Enter password.
-You should see:
-postgres=#
-
-5. Create Database
-   Inside PostgreSQL shell:
-
-```bash
-CREATE DATABASE finance_ai;
-```
-
-Verify:
-
-```bash
-\l
-```
-
-You should see: finance_ai
-
-Exit:
-
-```bash
-\q
-```
-
-6. Create Root .env
-   // FILE: .env
-
-```bash
-DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/finance_ai
-SECRET_KEY=super_secret_key
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=1440
-GEMINI_API_KEY=<YOUR_API_KEY>
-```
-
-7. Create Backend .env
-   // FILE: backend/.env
-
-```bash
-DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/finance_ai
-SECRET_KEY=super_secret_key
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=1440
-GEMINI_API_KEY=<YOUR_API_KEY>
-```
-
-8. Create Python Virtual Environment
-   From project root:
-
-```bash
-cd backend
-```
-
-Create venv:
-
-```bash
-python -m venv venv
-```
-
-Activate:
-Windows
-
-```bash
-venv\Scripts\activate
-```
-
-9. Install Backend Dependencies
-   pip install -r requirements.txt
-
-10. Run Backend
-    Inside backend folder:
-
-```bash
-uvicorn app.main:app --reload
-```
-
-Expected:
-
-```bash
-Uvicorn running on http://127.0.0.1:8000
-```
-
-11. Verify Tables Were Created
-    Open pgAdmin OR psql:
-
-```bash
-psql -U postgres
-```
-
-Connect:
-
-```bash
-\c finance_ai
-```
-
-Show tables:
-
-```bash
-\dt
-```
-
-Expected:
-users
-expenses
-forecasts
-anomalies
-uploaded_statements
-recommendations
-chatbot_history
-
-12. Test API
-    Open browser:
-    http://127.0.0.1:8000/docs
-    You should see FastAPI Swagger UI.
-
-13. Test Signup
-    Use:
-    POST /api/auth/signup
-
-Example:
-
-{
-"name":"Kshitij",
-"email":"test@test.com",
-"password":"123456"
-}
-
-14. Verify User Saved
-    In PostgreSQL:
-
-```bash
-SELECT * FROM users;
-```
-
-Expected:
-
-id | name | email
-----+---------+----------------
-1 | Kshitij | test@test.com
-
-15. To run the entire application - Run the following in seperate terminals
-    Frontend:
-
-```bash
-cd frontend
-npm run dev
-```
-
-Backend:
-
-```bash
-cd backend
-uvicorn app.main:app --reload
-```
-
-Docker  
-. Open Docker Desktop and run the expense-redis container  
-. To verify:
-
-```bash
-docker ps
-```
-
-Celery
-
-```bash
-cd backend
-celery -A app.celery_app:celery_app worker --loglevel=info --pool=solo
-```
-
----
-
-# Gemini API Setup
-
-1. Get Gemini API
-   Go to Google AI Studio. Create an API Key in Free Tier. Copy the API Key.
-
-2. In backend and root .env files, modify
-
-```bash
-GEMINI_API_KEY=<paste the copied API Key here>
-```
-
----
-
-# API Summary
-
-## Auth
-
-- POST /api/auth/signup
-- POST /api/auth/login
-
-## Expenses
-
-- GET /api/expenses
-- POST /api/expenses
-
-## Analytics
-
-- GET /api/analytics
-
-## Forecast
-
-- GET /api/forecast
-
-## Anomaly
-
-- GET /api/anomaly
-
-## Chatbot
-
-- POST /api/chatbot
-
----
-
-# Environment Variables
-
-```env
-DATABASE_URL=
-SECRET_KEY=
-ALGORITHM=
-ACCESS_TOKEN_EXPIRE_MINUTES=
-GEMINI_API_KEY=
-```
-
----
-
-# Future Improvements
-
-- OpenAI API integration
-- Budget planner
-- OCR statement extraction
-- Advanced forecasting
-- Real-time alerts
+Thanks to @arzzun05 and @anshdhoka-cmyk for their valueble contributions.
 
 ---
