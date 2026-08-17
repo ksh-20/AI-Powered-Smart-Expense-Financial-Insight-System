@@ -128,11 +128,11 @@ function Modal({ onClose, onSave, editGoal, existingCategories }) {
               <input
                 id="budget-limit-input"
                 type="number"
-                min="1"
-                step="100"
+                min="0.01"
+                step="any"
                 value={limit}
                 onChange={(e) => { setLimit(e.target.value); setError(""); }}
-                placeholder="0"
+                placeholder="0.00"
                 className="w-full bg-slate-800 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors"
               />
             </div>

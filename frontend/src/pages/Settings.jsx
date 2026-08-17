@@ -91,7 +91,7 @@ function BudgetField({ symbol, value, onChange }) {
         <input
           type="number"
           min="0"
-          step="100"
+          step="any"
           value={value}
           onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
           className="bg-slate-800 border border-white/10 rounded-xl pl-8 pr-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors w-40 text-right"
