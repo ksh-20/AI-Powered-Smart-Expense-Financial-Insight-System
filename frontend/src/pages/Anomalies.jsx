@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
 import { useSettings } from "../context/SettingsContext";
+import FormattedText from "../components/FormattedText";
 
 export default function Anomalies() {
   const { formatAmount } = useSettings();
@@ -332,11 +333,12 @@ export default function Anomalies() {
                         <div className="bg-purple-950/30 border border-purple-500/30 rounded-2xl p-5 space-y-2">
                           <div className="flex items-center gap-2 text-xs font-bold text-purple-300">
                             <span>✧</span>
-                            <span>Live Gemini Assistant Diagnostic</span>
+                            <span>Live AI Diagnostic Explanation</span>
                           </div>
-                          <p className="text-xs text-gray-200 whitespace-pre-line leading-relaxed">
-                            {deepDives[itemKey]}
-                          </p>
+                          <FormattedText
+                            text={deepDives[itemKey]}
+                            className="text-xs text-slate-200 leading-relaxed"
+                          />
                         </div>
                       )}
 
@@ -348,7 +350,7 @@ export default function Anomalies() {
                         </p>
 
                         <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
-                          {/* Live Gemini Ask Button */}
+                          {/* Live AI Ask Button */}
                           {!deepDives[itemKey] && (
                             <button
                               onClick={(e) => handleDeepDiveAI(e, a)}
@@ -358,11 +360,11 @@ export default function Anomalies() {
                               {deepDiveLoading[itemKey] ? (
                                 <>
                                   <span className="w-3 h-3 border-2 border-purple-300/30 border-t-purple-300 rounded-full animate-spin" />
-                                  Analyzing with Gemini…
+                                  Analyzing with AI…
                                 </>
                               ) : (
                                 <>
-                                  <span>✧</span> Ask Gemini Deep-Dive
+                                  <span>✧</span> Ask AI Deep-Dive
                                 </>
                               )}
                             </button>

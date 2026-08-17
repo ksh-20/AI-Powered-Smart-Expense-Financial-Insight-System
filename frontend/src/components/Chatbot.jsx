@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import api from "../api/axios";
+import FormattedText from "./FormattedText";
 
 const STARTER_PROMPTS = [
   {
@@ -88,7 +89,11 @@ export default function Chatbot() {
   };
 
   const handleCopy = (text, index) => {
-    navigator.clipboard.writeText(text);
+    // Strip raw asterisks and hashes for clean clipboard text
+    const cleanText = text
+      .replace(/###\s*/g, "")
+      .replace(/\*\*/g, "");
+    navigator.clipboard.writeText(cleanText);
     setCopiedIndex(index);
     setTimeout(() => setCopiedIndex(null), 2000);
   };
@@ -177,17 +182,21 @@ export default function Chatbot() {
               )}
 
               <div
-                className={`group relative rounded-3xl p-5 max-w-[85%] sm:max-w-[75%] shadow-xl backdrop-blur-md ${
+                className={`group relative rounded-3xl p-5 max-w-[85%] sm:max-w-[78%] shadow-xl backdrop-blur-md ${
                   c.type === "user"
                     ? "bg-indigo-600 text-white rounded-br-none border border-indigo-400/30"
-                    : "bg-slate-800/80 text-slate-100 rounded-bl-none border border-white/10"
+                    : "bg-slate-800/85 text-slate-100 rounded-bl-none border border-white/10"
                 }`}
               >
-                <div className="text-xs sm:text-sm leading-relaxed whitespace-pre-wrap font-normal">
-                  {c.text}
-                </div>
+                {c.type === "user" ? (
+                  <div className="text-xs sm:text-sm leading-relaxed whitespace-pre-wrap font-normal">
+                    {c.text}
+                  </div>
+                ) : (
+                  <FormattedText text={c.text} className="text-xs sm:text-sm" />
+                )}
 
-                <div className="flex items-center justify-between gap-4 mt-3 pt-2 border-t border-white/10 text-[10px] text-slate-300">
+                <div className="flex items-center justify-between gap-4 mt-3 pt-2 border-t border-white/10 text-[10px] text-slate-400 font-medium">
                   <span>{c.time}</span>
                   {c.type === "bot" && (
                     <button

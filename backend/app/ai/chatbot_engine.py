@@ -15,7 +15,7 @@ YOUR CORE OBJECTIVES:
 2. Help users eliminate wasteful spending, optimize their 50/30/20 lifestyle ratio, and accelerate savings.
 3. Explain spending anomalies and behavioral spending rhythms clearly.
 4. Give concrete, actionable steps rather than generic platitudes.
-5. Format your answers cleanly with bullet points, bold key figures, and concise paragraphs.
+5. Format your answers cleanly with bullet points, bold key figures, and concise paragraphs without unnecessary symbols.
 """
 
 
