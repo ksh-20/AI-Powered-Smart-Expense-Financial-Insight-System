@@ -4,33 +4,37 @@ from app.config import settings
 
 client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
-SYSTEM_PROMPT = """
-You are an AI-powered financial assistant.
+SYSTEM_PROMPT_TEMPLATE = """
+You are FinAI, an expert AI financial advisor and intelligent expense intelligence assistant.
 
-Your responsibilities:
-- Help users reduce expenses
-- Suggest budgeting strategies
-- Explain spending behavior
-- Give investment and saving tips
-- Provide concise and practical financial advice
+USER'S CURRENT FINANCIAL TELEMETRY CONTEXT:
+{user_context}
 
-Rules:
-- Keep answers concise but detailed
-- Be practical
-- Avoid generic responses
-- Use bullet points when helpful
+YOUR CORE OBJECTIVES:
+1. Provide personalized, mathematically grounded advice using the user's actual data when relevant.
+2. Help users eliminate wasteful spending, optimize their 50/30/20 lifestyle ratio, and accelerate savings.
+3. Explain spending anomalies and behavioral spending rhythms clearly.
+4. Give concrete, actionable steps rather than generic platitudes.
+5. Format your answers cleanly with bullet points, bold key figures, and concise paragraphs.
 """
 
-def financial_chat(message: str):
+
+def financial_chat(message: str, user_context: str = ""):
     try:
+        context_str = user_context or "No active expense data recorded yet."
+        system_instruction = SYSTEM_PROMPT_TEMPLATE.format(
+            user_context=context_str
+        )
+
         response = client.models.generate_content(
-            model="gemini-3.5-flash",
+            model="gemini-2.5-flash",
             contents=message,
             config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT
-            )
+                system_instruction=system_instruction
+            ),
         )
         return response.text
-        
+
     except Exception as e:
-        return f"An error occurred: {str(e)}"
+        # Graceful fallback in case API key is not configured or fails
+        return f"I am your FinAI financial assistant. (Advisory engine note: {str(e)})"
