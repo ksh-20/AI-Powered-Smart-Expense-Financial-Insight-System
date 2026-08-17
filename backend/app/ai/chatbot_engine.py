@@ -27,7 +27,7 @@ def financial_chat(message: str, user_context: str = ""):
         )
 
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-3.5-flash",
             contents=message,
             config=types.GenerateContentConfig(
                 system_instruction=system_instruction
@@ -36,5 +36,4 @@ def financial_chat(message: str, user_context: str = ""):
         return response.text
 
     except Exception as e:
-        # Graceful fallback in case API key is not configured or fails
         return f"I am your FinAI financial assistant. (Advisory engine note: {str(e)})"

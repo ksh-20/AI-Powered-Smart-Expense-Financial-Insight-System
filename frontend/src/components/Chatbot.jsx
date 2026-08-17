@@ -261,7 +261,6 @@ export default function Chatbot() {
         </form>
         <div className="flex items-center justify-between text-[11px] text-slate-400 mt-2 px-2">
           <span>Press Enter to send</span>
-          <span>Powered by Gemini 2.5 Flash</span>
         </div>
       </div>
     </div>
