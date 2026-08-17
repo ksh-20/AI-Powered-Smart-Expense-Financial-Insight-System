@@ -1,33 +1,43 @@
-from fastapi import APIRouter,Depends
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import func
-
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.expense import Expense
-from app.ai.recommender import generate_recommendations
+from app.ai.recommender import generate_detailed_insights
 
-router=APIRouter(prefix="/api/insights",tags=["Insights"])
+router = APIRouter(prefix="/api/insights", tags=["Insights"])
+
 
 @router.get("/")
 def insights(
-    db:Session=Depends(get_db),
-    user=Depends(get_current_user)
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
 ):
-    expenses=db.query(Expense).filter(
-        Expense.user_id==user.id
-    ).all()
+    expenses = (
+        db.query(Expense)
+        .filter(Expense.user_id == user.id)
+        .order_by(Expense.date.desc())
+        .all()
+    )
 
-    total=sum([e.amount for e in expenses])
+    total = round(sum([e.amount for e in expenses]), 2)
 
-    categories={}
+    categories = {}
+    expense_dicts = []
     for e in expenses:
-        categories[e.category]=categories.get(e.category,0)+e.amount
+        cat = e.category or "Other"
+        categories[cat] = round(categories.get(cat, 0.0) + e.amount, 2)
+        expense_dicts.append({
+            "id": e.id,
+            "amount": e.amount,
+            "category": cat,
+            "description": e.description or "Expense",
+            "date": str(e.date) if e.date else "",
+        })
 
-    rec=generate_recommendations(total,categories)
+    result = generate_detailed_insights(total, categories, expense_dicts)
+    result["total"] = total
+    result["count"] = len(expenses)
+    result["categories"] = categories
 
-    return {
-        "recommendations":rec,
-        "total":total,
-        "categories":categories
-    }
+    return result
